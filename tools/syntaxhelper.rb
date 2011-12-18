@@ -28,11 +28,13 @@ module SyntaxHL
 
 		#
 		# whether the program is run from a subdir or from the root dir
-		# this should return the same answer
+		# this should return the same answer as this script should be 
+		# one dir down from the root directory. <root>/tools/syntaxhelper.rb
 		#
 		def getRootDir()
 			file_loc = File.expand_path(File.dirname(File.dirname(__FILE__)))
 		end
+
 		# Themes 
 		# Default	shThemeDefault.css
 		# Django	shThemeDjango.css
@@ -41,7 +43,23 @@ module SyntaxHL
 		# Fade To Grey	shThemeFadeToGrey.css
 		# Midnight	shThemeMidnight.css
 		# RDark	shThemeRDark.css
+		# TODO: programmatically extract this from source files
 		#
+		def gatherThemes()
+			theme_data = Hash.new()
+			theme_data['Default'] = 'shThemeDefault.css'
+			theme_data['Django'] = 'shThemeDjango.css'
+			theme_data['Eclipse'] = 'shThemeEclipse.css'
+			theme_data['Emacs'] =	'shThemeEmacs.css'
+			theme_data['Fade To Grey'] = 'shThemeFadeToGrey.css'
+			theme_data['Midnight'] = 'shThemeMidnight.css'
+			theme_data['RDark'] = 'shThemeRDark.css'
+
+			theme_data.each{ |title,filename|
+				@themes << SHTheme.new(title,filename,self)
+			}
+			
+		end
 
 		# brushes
 		# ActionScript3	as3, actionscript3	shBrushAS3.js
@@ -67,26 +85,120 @@ module SyntaxHL
 		# SQL	sql	shBrushSql.js
 		# Visual Basic	vb, vbnet	shBrushVb.js
 		# XML	xml, xhtml, xslt, html, xhtml	shBrushXml.js
+		# TODO: programmatically extract this from source files
+		#
+		def gatherBrushes()
+			brush = SHBrush.new('ActionScript3','shBrushAS3.js',self)	
+			brush.aliases = ['as3', 'actionscript3']
+			@brushes << brush
+
+			brush = SHBrush.new('Bash/shell','shBrushBash.js',self)	
+			brush.aliases = ['bash', 'shell']
+			@brushes << brush
+
+			brush = SHBrush.new('ColdFusion	','shBrushColdFusion.js',self)	
+			brush.aliases = ['cf', 'coldfusion']
+			@brushes << brush
+
+			brush = SHBrush.new('C#','shBrushCSharp.js',self)	
+			brush.aliases = ['c-sharp', 'csharp']
+			@brushes << brush
+
+			brush = SHBrush.new('C++','shBrushCpp.js',self)	
+			brush.aliases = ['cpp', 'c']
+			@brushes << brush
+
+			brush = SHBrush.new('CSS','shBrushCss.js',self)	
+			brush.aliases = ['css']
+			@brushes << brush
+
+			brush = SHBrush.new('Delphi','shBrushDelphi.js',self)	
+			brush.aliases = ['delphi', 'pas', 'pascal']
+			@brushes << brush
+
+			brush = SHBrush.new('Diff','shBrushDiff.js',self)	
+			brush.aliases = ['diff', 'patch']
+			@brushes << brush
+
+			brush = SHBrush.new('Erlang','shBrushErlang.js',self)	
+			brush.aliases = ['erl', 'erlang']
+			@brushes << brush
+
+			brush = SHBrush.new('Groovy','shBrushGroovy.js',self)	
+			brush.aliases = ['groovy']
+			@brushes << brush
+
+			brush = SHBrush.new('JavaScript','shBrushJScript.js',self)	
+			brush.aliases = ['js', 'jscript', 'javascript']
+			@brushes << brush
+
+			brush = SHBrush.new('Java','shBrushJava.js',self)	
+			brush.aliases = ['java']
+			@brushes << brush
+
+			brush = SHBrush.new('JavaFX','shBrushJavaFX.js',self)	
+			brush.aliases = ['jfx', 'javafx']
+			@brushes << brush
+
+			brush = SHBrush.new('Perl','shBrushPerl.js',self)	
+			brush.aliases = ['perl', 'pl']
+			@brushes << brush
+
+			brush = SHBrush.new('PHP','shBrushPhp.js',self)	
+			brush.aliases = ['php']
+			@brushes << brush
+
+			brush = SHBrush.new('Plain Text','shBrushPlain.js',self)	
+			brush.aliases = ['plain', 'text']
+			@brushes << brush
+
+			brush = SHBrush.new('PowerShell','shBrushPowerShell.js',self)	
+			brush.aliases = ['ps', 'powershell']
+			@brushes << brush
+
+			brush = SHBrush.new('Python','shBrushPython.js',self)	
+			brush.aliases = ['py', 'python']
+			@brushes << brush
+
+			brush = SHBrush.new('Ruby','shBrushRuby.js',self)	
+			brush.aliases = ['rails', 'ror', 'ruby']
+			@brushes << brush
+
+			brush = SHBrush.new('Scala','shBrushScala.js',self)	
+			brush.aliases = ['scala']
+			@brushes << brush
+
+			brush = SHBrush.new('SQL','shBrushSql.js',self)	
+			brush.aliases = ['sql']
+			@brushes << brush
+
+			brush = SHBrush.new('Visual Basic','shBrushVb.js',self)	
+			brush.aliases = ['vb', 'vbnet']
+			@brushes << brush
+
+			brush = SHBrush.new('XML','shBrushXml.js',self)	
+			brush.aliases = ['xml', 'xhtml', 'xslt', 'html', 'xhtml']
+			@brushes << brush
+		end
 	end
 
 	class SHBrush
 		attr_accessor :language, :aliases, :js_file
-		def initialize(lang,file_name)
+		def initialize(lang,file_name,sh)
 			@language = lang
-			@js_file = JsSrcFile.new(file_name)
+			@js_file = JsSrcFile.new(file_name,sh.getRootDir())
 		end
 	end
 
 	class SHTheme
 		attr_accessor :name, :css_file
-		attr_reader :file_name
 
 		def initialize(name,file_name,sh)
 			@name = name
-			@file_name = filename
-	
+			@css_file = CssSrcFile.new(file_name,sh.getRootDir())
 		end
 	end
+	
 	class SrcFile 
 		attr_reader :file_name 
 
@@ -106,7 +218,7 @@ module SyntaxHL
 	class JsSrcFile < SrcFile
 		@open_tag = "<script type=\"text/javascript\">"
 		@close_tag= "</script>"
-		def initialize(file_name)
+		def initialize(file_name,root_dir)
 			super(file_name,"scripts")
 		end
 	end
@@ -115,7 +227,7 @@ module SyntaxHL
 		@open_tag = "<style type=\"text/css\">"
 		@close_tag= "</style>"
 
-		def initialize(file_name)
+		def initialize(file_name,root_dir)
 			super(file_name,"styles")
 		end
 	end
