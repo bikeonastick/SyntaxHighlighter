@@ -5,7 +5,7 @@ module SyntaxHL
 	#
 	class SyntaxHLModel
 		attr_reader :script_dir, :src_dir, :style_dir, 
-			:test_dir, :tool_dir, :out_dir
+			:test_dir, :tool_dir, :out_dir, :core_js
 		# basedir
 		# -scripts
 		# -src
@@ -26,13 +26,45 @@ module SyntaxHL
 			@out_dir = "#{@root_dir}/dist"
 		end
 
+		def getCoreJs()
+			@core_js = SHBrush.new('core','shCore.js',self)
+		end
+
 		#
 		# whether the program is run from a subdir or from the root dir
 		# this should return the same answer as this script should be 
 		# one dir down from the root directory. <root>/tools/syntaxhelper.rb
 		#
 		def getRootDir()
-			file_loc = File.expand_path(File.dirname(File.dirname(__FILE__)))
+			file_loc = File.expand_path(__FILE__)
+			re = /(.*)\/tools\/syntaxhelper.rb/
+			md = re.match(file_loc)
+			if ( md == nil )
+				return file_loc
+			end
+			return md[1]
+		end
+
+		def getBrushByLanguage(lang)
+			retVal = nil
+			@brushes.each{ |brush|
+				if ( lang == brush.language )
+					retVal = brush
+				end
+			}
+
+			return retVal
+		end
+
+		def getThemeByName(name)
+			retVal = nil
+			@themes.each{ |theme|
+				if ( name == theme.name)
+					retVal = theme
+				end
+			}
+
+			return retVal
 		end
 
 		# Themes 
@@ -47,7 +79,7 @@ module SyntaxHL
 		#
 		def gatherThemes()
 			theme_data = Hash.new()
-			theme_data['Default'] = 'shThemeDefault.css'
+			theme_data['Default'] = 'shCoreDefault.css'
 			theme_data['Django'] = 'shThemeDjango.css'
 			theme_data['Eclipse'] = 'shThemeEclipse.css'
 			theme_data['Emacs'] =	'shThemeEmacs.css'
@@ -208,8 +240,8 @@ module SyntaxHL
 		@close_html_comment = "-->"
 
 		def initialize(file_name,dir_name)
-			@dir_name = dir_name
 			@file_name = file_name
+			@dir_name = dir_name
 			@src_file = File.new("#{@dir_name}/#{@file_name}",'r')
 		end
 
@@ -219,7 +251,7 @@ module SyntaxHL
 		@open_tag = "<script type=\"text/javascript\">"
 		@close_tag= "</script>"
 		def initialize(file_name,root_dir)
-			super(file_name,"scripts")
+			super(file_name,"#{root_dir}/scripts")
 		end
 	end
 
@@ -228,7 +260,7 @@ module SyntaxHL
 		@close_tag= "</style>"
 
 		def initialize(file_name,root_dir)
-			super(file_name,"styles")
+			super(file_name,"#{root_dir}/styles")
 		end
 	end
 end

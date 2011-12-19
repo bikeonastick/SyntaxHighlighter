@@ -11,10 +11,8 @@ class SHPackagerTest < Test::Unit::TestCase
 	def test_SyntaxHelper_getRootDir
 		answer = Dir.pwd
 		tst = SyntaxHL::SyntaxHLModel.new()
-		assert_match(/.*\/SyntaxHighlighter/,tst.getRootDir())
+		assert_match(/.*\/SyntaxHighlighter$/,tst.getRootDir())
 
-		Dir.chdir("tools")
-		assert_match(/.*\/SyntaxHighlighter/,tst.getRootDir())
 	end
 
 	def test_SyntaxHelper_gatherThemes
@@ -22,11 +20,35 @@ class SHPackagerTest < Test::Unit::TestCase
 		tst_themes = tst.gatherThemes()
 		assert_equal(7,tst_themes.length)
 	end
-	#23
+
 	def test_SyntaxHelper_gatherBrushes
 		tst = SyntaxHL::SyntaxHLModel.new()
 		tst_brushes = tst.gatherBrushes()
 		assert_equal(23,tst_brushes.length)
+	end
+
+	def test_SyntaxHelper_getThemeByName
+		tst = SyntaxHL::SyntaxHLModel.new()
+		tst_themes = tst.gatherThemes()
+		tst_name = "Django" 
+		tst_theme= tst.getThemeByName(tst_name)
+		assert_equal(tst_name,tst_theme.name)
+	end
+
+	def test_SyntaxHelper_getBrushByLanguage
+		tst = SyntaxHL::SyntaxHLModel.new()
+		tst.gatherBrushes()
+		tst_lang = "Java" 
+		tst_brush = tst.getBrushByLanguage(tst_lang)
+		assert_equal(tst_lang,tst_brush.language)
+	end
+
+	def test_SyntaxHelper_getBrushByLanguage2
+		tst = SyntaxHL::SyntaxHLModel.new()
+		tst.gatherBrushes()
+		tst_lang = "Foo" 
+		tst_brush = tst.getBrushByLanguage(tst_lang)
+		assert_nil(tst_brush)
 	end
 
 	def test_JsSrcFile_basic
