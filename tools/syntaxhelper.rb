@@ -54,7 +54,7 @@ module SyntaxHL
 
 		def getAvailableThemeNames()
 			names = Array.new()
-			@brushes.each{ |theme|
+			@themes.each{ |theme|
 				names << theme.name
 			}
 		end

@@ -11,16 +11,42 @@ module SHPackager
 			@entrypoint = "<script type=\"text/javascript\">SyntaxHighlighter.all();</script>"
 			@brush = brush
 			@style = style
-			@sh = SyntaxHelper.new()
+			@sh = SyntaxHL::SyntaxHLModel.new()
 			@sh.gatherThemes()
 			@sh.gatherBrushes()
-			@corejs = @sh.getCoreJs()
-			@brushjs = @sh.getBrushByLanguage(brush)
-			@css = @sh.getThemeByName(style)
 			@avail_brush_langs = @sh.getAvailableBrushLanguages()
 			@avail_themes = @sh.getAvailableThemeNames()
-			@example_pre = "<pre class=\"brush: #{@brushjs.aliases[0]};\"> //your code goes here </pre>"
 			
+		end
+
+		def to_s
+			@corejs = @sh.getCoreJs()
+			@brushjs = @sh.getBrushByLanguage(@brush)
+			@css = @sh.getThemeByName(@style)
+			@example_pre = "<pre class=\"brush: #{@brushjs.aliases[0]};\"> //your code goes here </pre>"
+
+			str = @corejs.to_s
+			str << "\n\n"
+			str << @brushjs.to_s
+			str << "\n\n"
+			str << @css.to_s
+			str << "\n\n"
+			str << @entrypoint
+			str << "\n\n"
+			str << "<h1>your blog goes here</h1>"
+			str << "\n\n"
+			str << @example_pre
+			str << "<h2>and some more here</h2>"
+		end
+
+		def to_f
+			if( !File.exists?(@sh.out_dir))
+				Dir.mkdir(@sh.out_dir)
+			end
+			out_name = Time.now.to_i
+			File.open(File.join(@sh.out_dir,"#{out_name}.txt"),'w') do |f|
+				f.puts self.to_s 
+			end
 		end
 	end
 # <script type="text/javascript" src="scripts/shCore.js"></script>

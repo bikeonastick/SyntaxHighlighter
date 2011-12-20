@@ -1,5 +1,6 @@
 require 'test/unit'
 require 'tools/syntaxhelper.rb'
+require 'tools/sh_pkg.rb'
 
 class SHPackagerTest < Test::Unit::TestCase
 	
@@ -88,7 +89,15 @@ class SHPackagerTest < Test::Unit::TestCase
 	#	assert_nothing_raised do
 	#		puts tst.to_s
 	#	end
-	end
+	#end
+
+	# another test used just to drive final dev stages before wrapping this
+	# up in a script
+	#def test_PackageModel_to_f
+	#	tst = SHPackager::PackageModel.new('JavaScript','Default')
+	#	tst.to_f
+	#end
+
 
 end
 
