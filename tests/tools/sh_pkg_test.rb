@@ -56,7 +56,6 @@ class SHPackagerTest < Test::Unit::TestCase
 		name = 'shCore.js'
 		tst = SyntaxHL::JsSrcFile.new(name,sh.getRootDir())
 		assert_equal(name,tst.file_name)
-
 	end
 
 	def test_CssSrcFile_basic
@@ -79,6 +78,16 @@ class SHPackagerTest < Test::Unit::TestCase
 		file_name = 'shThemeDefault.css'
 		tst = SyntaxHL::SHTheme.new(name,file_name,SyntaxHL::SyntaxHLModel.new())
 		assert_equal(name,tst.name)
+	end
+
+	# uncomment to test printing out a file too much output for regular testing
+	#def test_JsSrcFile_to_s
+	#	sh = SyntaxHL::SyntaxHLModel.new()
+	#	name = 'shCore.js'
+	#	tst = SyntaxHL::JsSrcFile.new(name,sh.getRootDir())
+	#	assert_nothing_raised do
+	#		puts tst.to_s
+	#	end
 	end
 
 end

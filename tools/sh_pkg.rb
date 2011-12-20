@@ -5,6 +5,7 @@ module SHPackager
 	#
 	class PackageModel
 		attr_accessor :corejs, :brushjs, :css, :entrypoint
+		attr_reader :avail_brush_langs, :avail_themes
 
 		def initialize(brush,style)
 			@entrypoint = "<script type=\"text/javascript\">SyntaxHighlighter.all();</script>"
@@ -14,6 +15,11 @@ module SHPackager
 			@sh.gatherThemes()
 			@sh.gatherBrushes()
 			@corejs = @sh.getCoreJs()
+			@brushjs = @sh.getBrushByLanguage(brush)
+			@css = @sh.getThemeByName(style)
+			@avail_brush_langs = @sh.getAvailableBrushLanguages()
+			@avail_themes = @sh.getAvailableThemeNames()
+			@example_pre = "<pre class=\"brush: #{@brushjs.aliases[0]};\"> //your code goes here </pre>"
 			
 		end
 	end

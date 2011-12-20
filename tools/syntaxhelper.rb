@@ -45,6 +45,22 @@ module SyntaxHL
 			return md[1]
 		end
 
+		def getAvailableBrushLanguages()
+			langs = Array.new()
+			@brushes.each{ |lang|
+				langs << lang
+			}
+		end
+
+		def getAvailableThemeNames()
+			names = Array.new()
+			@brushes.each{ |theme|
+				names << theme.name
+			}
+		end
+
+		# TODO: consider making this get the file JIT instead of having all
+		# brushes captured at once in the beginning
 		def getBrushByLanguage(lang)
 			retVal = nil
 			@brushes.each{ |brush|
@@ -56,6 +72,8 @@ module SyntaxHL
 			return retVal
 		end
 
+		# TODO: consider making this get the file JIT instead of having all
+		# themes captured at once in the beginning
 		def getThemeByName(name)
 			retVal = nil
 			@themes.each{ |theme|
@@ -220,6 +238,10 @@ module SyntaxHL
 			@language = lang
 			@js_file = JsSrcFile.new(file_name,sh.getRootDir())
 		end
+
+		def to_s
+			@str = @js_file.to_s
+		end
 	end
 
 	class SHTheme
@@ -229,38 +251,80 @@ module SyntaxHL
 			@name = name
 			@css_file = CssSrcFile.new(file_name,sh.getRootDir())
 		end
+
+		def to_s
+			@str = @css_file.to_s
+		end
 	end
 	
 	class SrcFile 
-		attr_reader :file_name 
+		attr_reader :file_name, :open_src_comment, :close_src_comment, 
+			:open_html_comment, :close_html_comment
 
-		@open_src_comment = "/*"
-		@close_src_comment = "*/"
-		@open_html_comment = "<!--"
-		@close_html_comment = "-->"
 
 		def initialize(file_name,dir_name)
 			@file_name = file_name
 			@dir_name = dir_name
 			@src_file = File.new("#{@dir_name}/#{@file_name}",'r')
+			@open_src_comment = "/*"
+			@close_src_comment = "*/"
+			@open_html_comment = "<!--"
+			@close_html_comment = "-->"
+		end
+
+		def to_s
+			lines = @src_file.readlines()
+			line_str = lines.join()
 		end
 
 	end
 
 	class JsSrcFile < SrcFile
-		@open_tag = "<script type=\"text/javascript\">"
-		@close_tag= "</script>"
 		def initialize(file_name,root_dir)
 			super(file_name,"#{root_dir}/scripts")
+			@file_name = file_name
+			@open_tag = "<script type=\"text/javascript\">"
+			@close_tag= "</script>"
 		end
+
+		def to_s
+			str = @open_tag 
+			str << "\n"
+			str << @open_html_comment
+			str << "\n"
+			str << @open_src_comment
+			str << " "
+			str << @file_name
+			str << " "
+			str << @close_src_comment
+			str << "\n"
+			str << super.to_s
+			str << '//'
+			str << @close_html_comment
+			str << @close_tag
+		end
+
 	end
 
 	class CssSrcFile < SrcFile
-		@open_tag = "<style type=\"text/css\">"
-		@close_tag= "</style>"
 
 		def initialize(file_name,root_dir)
 			super(file_name,"#{root_dir}/styles")
+			@open_tag = "<style type=\"text/css\">"
+			@close_tag= "</style>"
+		end
+
+		def to_s
+			str = @open_tag 
+			str << "\n"
+			str << @open_src_comment
+			str << " "
+			str << @file_name
+			str << " "
+			str << @close_src_comment
+			str << "\n"
+			str << super.to_s
+			str << @close_tag
 		end
 	end
 end
